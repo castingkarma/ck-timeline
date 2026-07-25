@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revenue Projections — Casting Karma LLC</title>
+<style>
+  :root{--ink:#2E3A28;--ink2:#6E7A63;--line:#E6E0D2;--card:#fff;--gold:#A8863F;--green:#3B6D34;--bg:#FBF8F1}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  .shell{max-width:820px;margin:0 auto;padding:28px 20px 48px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  header img{width:40px;height:40px;border-radius:9px}
+  header h1{font-size:19px;font-weight:800;margin:0}
+  header .sub{font-size:12.5px;color:var(--ink2);margin-top:2px}
+  .lead{font-size:13px;color:var(--ink2);max-width:640px;margin:14px 0 20px;line-height:1.55}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.wrap{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .panel h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin:0 0 14px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:5px}
+  .field .hint{font-weight:400;color:var(--ink2)}
+  .field input,.field select{width:100%;font-size:15px;font-family:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px 12px;outline:none}
+  .field input:focus,.field select:focus{border-color:var(--gold)}
+  .inline{display:flex;gap:10px;align-items:center}
+  .inline input{width:90px}
+  .res{display:flex;flex-direction:column;gap:12px}
+  .kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .kpi .k{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2)}
+  .kpi .v{font-size:30px;font-weight:800;line-height:1.1;margin-top:4px}
+  .kpi .d{font-size:12px;color:var(--ink2);margin-top:3px}
+  .kpi.green .v{color:var(--green)}
+  .kpi.gold .v{color:var(--gold)}
+  .note{font-size:11.5px;color:var(--ink2);margin-top:14px;line-height:1.5}
+  footer{margin-top:26px;font-size:11.5px;color:var(--ink2);text-align:center}
+  footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <img src="https://castingkarmallc.com/emblem.png" alt="Casting Karma">
+    <div>
+      <h1>🧮 Revenue Projections</h1>
+      <div class="sub">Casting Karma LLC · <a href="https://castingkarmallc.com" style="color:var(--gold);text-decoration:none">castingkarmallc.com</a></div>
+    </div>
+  </header>
+  <p class="lead">A quick what-if calculator. Enter a subscription price, how many emails you'll send, and a conversion rate — see the subscribers and revenue it implies. Pick a lower rate to stress-test the worst case. Nothing is saved; it's a live sandbox.</p>
+
+  <div class="wrap">
+    <div class="panel">
+      <h3>Inputs</h3>
+      <div class="field">
+        <label>Subscription price <span class="hint">($ per month, per subscriber)</span></label>
+        <input id="price" type="number" min="0" step="1" value="99" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Total emails sent</label>
+        <input id="emails" type="number" min="0" step="100" value="10000" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Conversion rate <span class="hint">(email → paying subscriber)</span></label>
+        <select id="rate" onchange="calc()">
+          <option value="0.05">5.0% — strong email campaign (top of range)</option>
+          <option value="0.04">4.0%</option>
+          <option value="0.03">3.0% — above-average email conversion</option>
+          <option value="0.025">2.5%</option>
+          <option value="0.02" selected>2.0% — average email conversion (benchmark)</option>
+          <option value="0.015">1.5%</option>
+          <option value="0.01">1.0% — typical / conservative</option>
+          <option value="0.0075">0.75%</option>
+          <option value="0.005">0.5% — realistic cold email</option>
+          <option value="0.0025">0.25%</option>
+          <option value="0.001">0.1% — pessimistic cold</option>
+          <option value="0.0005">0.05%</option>
+          <option value="0">0% — worst case (floor)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>…or a custom rate <span class="hint">(overrides the dropdown if set)</span></label>
+        <div class="inline"><input id="custom" type="number" min="0" max="100" step="0.01" placeholder="e.g. 1.25" oninput="calc()"><span style="font-size:14px;color:var(--ink2)">%</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Results</h3>
+      <div class="res">
+        <div class="kpi"><div class="k">Rate used</div><div class="v" id="outRate" style="font-size:22px">—</div><div class="d" id="outBasis">—</div></div>
+        <div class="kpi gold"><div class="k">Total subscribers</div><div class="v" id="outSubs">—</div><div class="d">emails × conversion rate</div></div>
+        <div class="kpi green"><div class="k">Monthly revenue (MRR)</div><div class="v" id="outMRR">—</div><div class="d">subscribers × price</div></div>
+        <div class="kpi green"><div class="k">Annual revenue (ARR)</div><div class="v" id="outARR">—</div><div class="d">MRR × 12 (if all retained)</div></div>
+      </div>
+      <div class="note"><b>Reading it honestly:</b> this assumes every converted subscriber stays a full year (no churn) and pays every month — real ARR will be lower. It also treats conversion as email→paying customer in one step; if your funnel has a free trial in the middle, the true rate is usually lower than the email-reply rate. Use the low end of the dropdown to see the floor.</div>
+    </div>
+  </div>
+
+  <footer>Casting Karma LLC · internal planning tool</footer>
+</div>
+
+<script>
+function calc(){
+  var price=parseFloat(document.getElementById('price').value)||0;
+  var emails=parseFloat(document.getElementById('emails').value)||0;
+  var custom=document.getElementById('custom').value;
+  var rate, basis;
+  if(custom!==''&&!isNaN(parseFloat(custom))){ rate=Math.max(0,parseFloat(custom))/100; basis='custom rate'; }
+  else { rate=parseFloat(document.getElementById('rate').value)||0; basis='from dropdown'; }
+  var subs=Math.floor(emails*rate);
+  var mrr=subs*price;
+  var arr=mrr*12;
+  var pct=rate*100;
+  var money=function(n){return '$'+Math.round(n).toLocaleString('en-US');};
+  document.getElementById('outRate').textContent=((pct%1===0)?pct.toFixed(0):pct.toFixed(2).replace(/0+$/,'').replace(/\.$/,''))+'%';
+  document.getElementById('outBasis').textContent=basis+' · '+emails.toLocaleString('en-US')+' emails';
+  document.getElementById('outSubs').textContent=subs.toLocaleString('en-US');
+  document.getElementById('outMRR').textContent=money(mrr);
+  document.getElementById('outARR').textContent=money(arr);
+}
+calc();
+</script>
+</body>
+</html>
